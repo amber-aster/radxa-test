@@ -192,7 +192,6 @@ func drawMetrics(dst *ebiten.Image, g *game) {
 	lines := []string{
 		"RADXA / EBITEN RENDER TEST",
 		fmt.Sprintf("FPS %.1f  TPS %.1f  frame %.2fms  max %.2fms", ebiten.ActualFPS(), ebiten.ActualTPS(), g.frameMS, g.maxFrameMS),
-		fmt.Sprintf("render TPS %.1f", ebiten.ActualRenderingTPS()),
 		fmt.Sprintf("heap %.1fMB  goroutines %d  mode %s", float64(m.Alloc)/1024/1024, runtime.NumGoroutine(), mode),
 	}
 	if g.showHelp {
