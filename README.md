@@ -1,22 +1,29 @@
-# Ebiten Radxa Dashboard Render Test
+# Ebiten Radxa Dashboard Test
 
-Standalone fake car dashboard / GPU stress test for Rock Pi 4B+ experiments. It does not use ALDL; it only tests whether Ebiten renders smoothly on your minimal display stack.
+Standalone fake car dashboard for Rock Pi 4B+ experiments. It does not use ALDL/CAN yet; keyboard input feeds a clean `VehicleState` that the renderer draws.
 
 ## Build On Radxa
 
-Copy this folder to the Radxa, then run:
+Install the native packages Ebiten needs, then build on the Radxa:
 
 ```sh
 cd ebiten-radxa-dashboard-test
-sh ./install-radxa-deps.sh
+sudo apt update
+sudo apt install -y build-essential libgl1-mesa-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxxf86vm-dev libasound2-dev
 make build
-./radxa-dashboard-test -fullscreen=true -stress=true
+./radxa-dashboard-test -fullscreen=true
 ```
 
-Or build and run in one command:
+For a quick windowed local run:
 
 ```sh
 make run
+```
+
+If cross-compiling from another Linux ARM64-capable setup with the right C toolchain available:
+
+```sh
+make build-radxa
 ```
 
 ## Minimal X11 Kiosk Test
@@ -34,7 +41,7 @@ Wayland + Cage might work only if this Ebiten/GLFW build runs as a native Waylan
 Ebiten needs a display backend. For lowest-pain testing use Wayland + Cage or X11. Cage is a good future path for kiosk boot:
 
 ```sh
-cage ./radxa-dashboard-test -fullscreen=true -stress=true
+cage ./radxa-dashboard-test -fullscreen=true
 ```
 
 Pure DRM/KMS without Wayland/X11 is not the normal Ebiten path, so assume you need X11 or Wayland.
@@ -42,8 +49,10 @@ Pure DRM/KMS without Wayland/X11 is not the normal Ebiten path, so assume you ne
 ## Controls
 
 - `F`: fullscreen toggle
-- `S`: stress toggle
-- `H`: help toggle
+- `Up` / `Down`: change fake speed and RPM
+- `Left` / `Right`: change fake gear
+- `Space`: warning on
+- `C`: warning off
 - `Q` / `Esc`: quit
 
-Watch `FPS`, `frame ms`, and the graph. Stable `60 FPS` and `~16.7ms` frames means good.
+The important architecture is `input/source -> VehicleState -> Draw`. Later, replace `KeyboardVehicleSource` with a CAN/OBD/replay source without making the drawing code parse raw vehicle messages.
